@@ -6,8 +6,14 @@
 package modelo.DAO.FileXML;
 
 import POJO.Alumno;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import modelo.DAO.POJODAO;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
@@ -16,6 +22,8 @@ import modelo.DAO.POJODAO;
 public class AlumnoDAO implements POJODAO {
 
     private ArrayList<Alumno> listaAlumnos = new ArrayList<Alumno>();
+    private Alumno a;
+    private String dondeEstoy;
 
     @Override
     public void add(Object object) {
@@ -35,7 +43,7 @@ public class AlumnoDAO implements POJODAO {
 
     @Override
     public void update(Object object) {
-         int i = 0;
+        int i = 0;
         Alumno a = (Alumno) object;
         boolean enc = false;
         while ((i < this.listaAlumnos.size()) && (enc == false)) {
@@ -50,7 +58,7 @@ public class AlumnoDAO implements POJODAO {
 
     @Override
     public void delete(Object object) {
-                Alumno a = (Alumno) object;
+        Alumno a = (Alumno) object;
         int i = 0;
         while (i < this.listaAlumnos.size()) {
             if (this.listaAlumnos.get(i).getId() == a.getId()) {
@@ -63,14 +71,22 @@ public class AlumnoDAO implements POJODAO {
 
     @Override
     public ArrayList list() {
-return listaAlumnos;    }
-
-    @Override
-    public void open() throws Exception {
-        throw new UnsupportedOperationException("sin implementar."); //To change body of generated methods, choose Tools | Templates.
+        return listaAlumnos;
     }
 
     @Override
+    //usamos sax para leer
+    public void open() throws FileNotFoundException, IOException, SAXException {
+        XMLReader procesadorXML = XMLReaderFactory.createXMLReader();
+        GestionContenido gestor= new GestionContenido();
+        procesadorXML.setContentHandler(gestor);
+        InputSource fileXML = new InputSource("alumnos.xml");
+        procesadorXML.parse(fileXML);
+        //ArrayList<Alumno> listaAlumnos = gestor.getListaAlumnos();
+    }
+
+    @Override
+    //usamos XStream para escribir
     public void close() throws Exception {
         throw new UnsupportedOperationException("Not supported yetxxxx."); //To change body of generated methods, choose Tools | Templates.
     }
